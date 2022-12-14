@@ -17,9 +17,8 @@ import { useAppSelector } from '../../../tools';
 
 export const MainPage: React.FC = () => {
     const {country, mainNews, currentTotalResults, isFetching} = useAppSelector(state => state.general);
-    const {getTopHeadlinesByCountryCode, setHeadlines} = useGeneral();
-    const [page, setPage] = useState(1);
-    const [isLocalFetching, setLocalFetching] = useState(false);
+    const { getTopHeadlinesByCountryCode, setHeadlines, setMainNewsPage, getUserCountryCode} = useGeneral();
+    const [isLocalFetching, setLocalFetching] = useState<boolean>(false);
     const scrollHandler = (e: any): void => {
             if (e.target.scrollHeight - e.target.scrollTop - window.innerHeight < 100) {
                 setLocalFetching(true);
@@ -27,13 +26,15 @@ export const MainPage: React.FC = () => {
         }
     useEffect(() => {
         if (isLocalFetching) {
-            if (mainNews.length < currentTotalResults) {
-                NewsAPI.getTopHeadlinesByCountryCode(country ? country : 'us', page + 1)
+            if (mainNews.data.length && mainNews.data.length < currentTotalResults) {
+                NewsAPI.getTopHeadlinesByCountryCode(country ? country : 'us', mainNews.page + 1)
                     .then(response => {
                         setHeadlines(response.data.articles);
-                        setPage(prevState => prevState + 1);
+                        setMainNewsPage(mainNews.page + 1);
                     })
                     .finally(() => setLocalFetching(false))
+            } else {
+                setLocalFetching(false);
             }
         }
     }, [isLocalFetching])
@@ -43,11 +44,14 @@ export const MainPage: React.FC = () => {
             document.getElementById('app')?.removeEventListener('scroll', scrollHandler)
         }
     }, [])
-
     useEffect(() => {
-        if (mainNews.length < 20 * page - 1)
-        getTopHeadlinesByCountryCode(country, page);
-    }, [])
+        if (mainNews.data.length < 20 * mainNews.page - 1)
+        if (!country) {
+            getUserCountryCode();
+        } else {
+            getTopHeadlinesByCountryCode(country, mainNews.page);
+        }
+    }, [country])
 
     return (
         <Container
@@ -64,7 +68,7 @@ export const MainPage: React.FC = () => {
                 height: 'calc(100vh - 74px)'
             }}
         >
-            {isFetching || isLocalFetching && mainNews.length < currentTotalResults ? 
+            {isFetching || isLocalFetching && mainNews.data.length < currentTotalResults ? 
                 <LinearProgress 
                     sx={{ 
                         position: 'fixed', 
@@ -77,8 +81,8 @@ export const MainPage: React.FC = () => {
                 : 
                 null
             }
-            {mainNews.length ? 
-                mainNews.map(card => <NewsCard key={card.title} {...card} />)
+            {mainNews.data.length ? 
+                mainNews.data.map(card => <NewsCard key={card.title} {...card} />)
                 :
                 null
             }

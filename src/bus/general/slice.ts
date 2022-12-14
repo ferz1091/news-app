@@ -1,11 +1,11 @@
 // Core
 import { createSlice } from '@reduxjs/toolkit';
 
-// Api
-import NewsAPI from '../../api';
-
 // Thunks
 import * as thunks from './thunks';
+
+// Constants
+import { regions } from '../../init/constants';
 
 // Type
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -13,7 +13,7 @@ import { HeadlineType, CachedNewsType } from '../../init/types/defaultTypes';
 
 export type generalState = {
     country: string | null,
-    mainNews: Array<HeadlineType>,
+    mainNews: {data:Array<HeadlineType>, page: number},
     currentTotalResults: number,
     cachedNews: Array<CachedNewsType>
     isFetching: boolean,
@@ -22,7 +22,7 @@ export type generalState = {
 
 const initialState: generalState = {
     country: null,
-    mainNews: [],
+    mainNews: {data:[], page: 1},
     currentTotalResults: 0,
     cachedNews: [],
     isFetching: false,
@@ -33,14 +33,25 @@ const generalSlice = createSlice({
     name: 'general',
     initialState,
     reducers: {
+        // SET COUNTRY CODE
         setCountryCode: (state, action: PayloadAction<string>) => {
             state.country = action.payload;
         },
+        // SET TOTAL RESULTS
         setCurrentTotalResults: (state, action: PayloadAction<number>) => {
             state.currentTotalResults = action.payload;
         },
+        // SET HEADLINES
         setHeadlines: (state, action: PayloadAction<HeadlineType[]>) => {
-            state.mainNews = state.mainNews.concat(action.payload)
+            state.mainNews.data = state.mainNews.data.concat(action.payload)
+        },
+        // SET MAIN NEWS PAGE
+        setMainNewsPage: (state, action: PayloadAction<number>) => {
+            state.mainNews.page = action.payload
+        },
+        // RESET MAIN NEWS
+        resetMainNews: (state) => {
+            state.mainNews.data = [];
         }
     },
     extraReducers(builder) {
@@ -48,7 +59,7 @@ const generalSlice = createSlice({
             state.isFetching = true;
         })
         .addCase(thunks.getUserCountryCodeThunk.fulfilled, (state, action) => {
-            state.country = action.payload.country_code.toLowerCase();
+            state.country = regions.some(region => region === action.payload.country_code.toLocaleLowerCase()) ? action.payload.country_code.toLowerCase() : 'us';
             state.isFetching = false;
         })
         .addCase(thunks.getUserCountryCodeThunk.rejected, (state, action) => {
@@ -59,7 +70,7 @@ const generalSlice = createSlice({
             state.isFetching = true;
         })
         .addCase(thunks.getTopHeadlinesByCountryCodeThunk.fulfilled, (state, action) => {
-            state.mainNews = state.mainNews.concat(action.payload.articles);
+            state.mainNews.data = state.mainNews.data.concat(action.payload.articles);
             state.isFetching = false;
         })
         .addCase(thunks.getTopHeadlinesByCountryCodeThunk.rejected, (state, action) => {

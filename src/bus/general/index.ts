@@ -13,6 +13,9 @@ type useGeneralType = () => {
     getUserCountryCode: () => void;
     getTopHeadlinesByCountryCode: (countryCode: string | null, page: number) => void;
     setHeadlines: (articles: HeadlineType[]) => void;
+    resetMainNews: () => void;
+    setCountryCode: (countryCode: string) => void;
+    setMainNewsPage: (page: number) => void;
 }
 
 export const useGeneral: useGeneralType = () => {
@@ -26,9 +29,21 @@ export const useGeneral: useGeneralType = () => {
     function setHeadlines(articles: HeadlineType[]) {
         dispatch(generalActions.setHeadlines(articles))
     }
+    function setMainNewsPage(page: number) {
+        dispatch(generalActions.setMainNewsPage(page))
+    }
+    function resetMainNews() {
+        dispatch(generalActions.resetMainNews())
+    }
+    function setCountryCode(countryCode: string) {
+        dispatch(generalActions.setCountryCode(countryCode))
+    }
     return {
         getUserCountryCode,
         getTopHeadlinesByCountryCode,
-        setHeadlines
+        setHeadlines,
+        resetMainNews,
+        setCountryCode,
+        setMainNewsPage
     }
 }

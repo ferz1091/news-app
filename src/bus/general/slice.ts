@@ -59,7 +59,7 @@ const generalSlice = createSlice({
             state.isFetching = true;
         })
         .addCase(thunks.getUserCountryCodeThunk.fulfilled, (state, action) => {
-            state.country = regions.some(region => region === action.payload.country_code.toLocaleLowerCase()) ? action.payload.country_code.toLowerCase() : 'us';
+            state.country = regions.some(region => region.code === action.payload.country_code.toLocaleLowerCase()) ? action.payload.country_code.toLowerCase() : 'us';
             state.isFetching = false;
         })
         .addCase(thunks.getUserCountryCodeThunk.rejected, (state, action) => {

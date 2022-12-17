@@ -1,7 +1,7 @@
 // Core
 import React, { useEffect, useState } from 'react';
 import { Container } from '@mui/system';
-import { LinearProgress } from '@mui/material';
+import { LinearProgress, IconButton } from '@mui/material';
 
 // Api
 import NewsAPI from '../../../api';
@@ -10,15 +10,19 @@ import NewsAPI from '../../../api';
 import { useGeneral } from '../../../bus/general';
 
 // Components
-import { NewsCard } from '../../components';
+import { NewsCard, SearchPanel } from '../../components';
 
 // Tools
 import { useAppSelector } from '../../../tools';
+
+// Icons
+import SettingsIcon from '@mui/icons-material/Settings';
 
 export const MainPage: React.FC = () => {
     const {country, mainNews, currentTotalResults, isFetching} = useAppSelector(state => state.general);
     const { getTopHeadlinesByCountryCode, setHeadlines, setMainNewsPage, getUserCountryCode} = useGeneral();
     const [isLocalFetching, setLocalFetching] = useState<boolean>(false);
+    const [sidePanelIsVisible, toggleSidePanelIsVisible] = useState<boolean>(false);
     const scrollHandler = (e: any): void => {
             if (e.target.scrollHeight - e.target.scrollTop - window.innerHeight < 100) {
                 setLocalFetching(true);
@@ -52,7 +56,6 @@ export const MainPage: React.FC = () => {
             getTopHeadlinesByCountryCode(country, mainNews.page);
         }
     }, [country])
-
     return (
         <Container
             id='main'
@@ -68,6 +71,9 @@ export const MainPage: React.FC = () => {
                 height: 'calc(100vh - 74px)'
             }}
         >
+            <IconButton onClick={() => toggleSidePanelIsVisible(true)} sx={{ position: 'fixed', top: '64px', left: '0px'}}>
+                <SettingsIcon fontSize='medium'/>
+            </IconButton>
             {isFetching || isLocalFetching && mainNews.data.length < currentTotalResults ? 
                 <LinearProgress 
                     sx={{ 
@@ -86,6 +92,7 @@ export const MainPage: React.FC = () => {
                 :
                 null
             }
+            <SearchPanel sidePanelIsVisible={sidePanelIsVisible} toggleSidePanelIsVisible={toggleSidePanelIsVisible} />
         </Container>
     )
 }

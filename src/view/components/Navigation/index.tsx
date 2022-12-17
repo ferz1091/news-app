@@ -1,6 +1,21 @@
 // Core
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Box, IconButton, Drawer, List, ListItem, ListItemButton, Divider, Button, Menu, MenuItem, Avatar, Typography, Badge} from '@mui/material';
+import { 
+    AppBar, 
+    Toolbar, 
+    Box, 
+    IconButton, 
+    Drawer, 
+    List, 
+    ListItem, 
+    ListItemButton, 
+    Divider, 
+    Button, 
+    Menu, 
+    MenuItem, 
+    Avatar, 
+    Typography, 
+    Badge} from '@mui/material';
 
 // Bus
 import { useGeneral } from '../../../bus/general';
@@ -29,9 +44,10 @@ export const Navigation: React.FC = () => {
                 </IconButton>
                 <Box sx={{
                     display: 'flex', position: 'relative',
-                    left: 'calc(100vw - 250px)',
+                    left: {xs: 'calc(100vw - 230px)', sm: 'calc(100vw - 250px)'},
                     top: {xs: '5px', sm: '0'}
-}}>
+                    }}
+                >
                     {country ? <Badge badgeContent={country} color='error'><Avatar src={`https://flagsapi.com/${country.toUpperCase()}/flat/32.png`} sx={{ width: '32px', height: '32px' }}>{country}</Avatar></Badge> : null}
                     <Button 
                         variant='contained' 
@@ -43,9 +59,8 @@ export const Navigation: React.FC = () => {
                             ":hover": {color: 'white'}
                         }}
                         onClick={(e: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(e.currentTarget)}
-                    >
-                        Region
-                    </Button>
+                        children='Region'
+                    />
                 </Box>
                 <Menu 
                     open={Boolean(anchorEl)} 
@@ -55,20 +70,22 @@ export const Navigation: React.FC = () => {
                 >
                     {regions.map(region => 
                         <MenuItem 
-                            key={region} 
+                            key={region.code} 
                             onClick={() => {
                                 setAnchorEl(null);
                                 resetMainNews();
                                 setMainNewsPage(1);
-                                setCountryCode(region);
+                                setCountryCode(region.code);
                             }}
+                            disableGutters={true}
+                            sx={{pl: '10px'}}
                         >
                             <Avatar 
-                                alt={region} 
-                                src={`https://flagsapi.com/${region.toUpperCase()}/flat/16.png`}
+                                alt={region.code} 
+                                src={`https://flagsapi.com/${region.code.toUpperCase()}/flat/16.png`}
                                 sx={{height: '16px', width: '16px'}}
                             />
-                            <Typography children={region.toUpperCase()} variant='caption' pl='5px' />
+                            <Typography children={region.label} variant='caption' pl='5px' />
                         </MenuItem>
                     )}
                 </Menu>

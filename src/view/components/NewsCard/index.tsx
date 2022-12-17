@@ -76,7 +76,7 @@ export const NewsCard: React.FC<HeadlineType> = (cardData) => {
                             Share
                         </Button>
                         {cardData.publishedAt ? 
-                            <Box sx={{position: {xs: 'static', sm: 'absolute'}, top: '12px', right: '5px', pl: '6px'}}>
+                            <Box sx={{position: {xs: 'static', sm: 'absolute'}, top: '12px', right: '5px', pl: '6px', mt: {xs: '5px', sm: '0'}}}>
                                 <Chip variant='outlined' color='primary' label={<Typography variant='caption'>
                                     {new Date(cardData.publishedAt).toLocaleString()}
                                 </Typography>}/>

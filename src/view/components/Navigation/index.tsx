@@ -1,15 +1,11 @@
 // Core
 import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
     AppBar, 
     Toolbar, 
     Box, 
     IconButton, 
-    Drawer, 
-    List, 
-    ListItem, 
-    ListItemButton, 
-    Divider, 
     Button, 
     Menu, 
     MenuItem, 
@@ -20,6 +16,9 @@ import {
 // Bus
 import { useGeneral } from '../../../bus/general';
 
+// Components
+import { SearchPanel } from '../SearchPanel';
+
 // Constants
 import { regions } from '../../../init/constants';
 
@@ -27,20 +26,21 @@ import { regions } from '../../../init/constants';
 import { useAppSelector } from '../../../tools';
 
 // Icons
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import LanguageIcon from '@mui/icons-material/Language';
+import SearchIcon from '@mui/icons-material/Search';
 
 export const Navigation: React.FC = () => {
-    const [drawerIsOpen, setDrawerIsOpen] = useState<boolean>(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const {country} = useAppSelector(state => state.general);
-    const {resetMainNews, setCountryCode, setMainNewsPage} = useGeneral();
+    const [sidePanelIsVisible, toggleSidePanelIsVisible] = useState<boolean>(false);
+    const {country, mainNews} = useAppSelector(state => state.general);
+    const {resetMainNews, cacheNews, getNewsByParams} = useGeneral();
+    const navigate = useNavigate();
+    const params = useParams<{code?: string, category?: string, query?: string}>();
     return (
         <AppBar sx={{minHeight: '64px'}}>
             <Toolbar>
-                <IconButton onClick={() => setDrawerIsOpen(!drawerIsOpen)} sx={{color:'white'}}>
-                    <MenuIcon />
+                <IconButton onClick={() => toggleSidePanelIsVisible(true)} sx={{color:'white'}}>
+                    <SearchIcon sx={{position: 'relative', top: {sm: '0px', xs: '5px'}}}/>
                 </IconButton>
                 <Box sx={{
                     display: 'flex', position: 'relative',
@@ -48,7 +48,21 @@ export const Navigation: React.FC = () => {
                     top: {xs: '5px', sm: '0'}
                     }}
                 >
-                    {country ? <Badge badgeContent={country} color='error'><Avatar src={`https://flagsapi.com/${country.toUpperCase()}/flat/32.png`} sx={{ width: '32px', height: '32px' }}>{country}</Avatar></Badge> : null}
+                    {params.code || params.category ? 
+                        <Badge 
+                            badgeContent={params.code ? params.code : params.category !== 'category' ? mainNews.country?.slice(-2) : country} 
+                            color='error'
+                        >
+                            <Avatar 
+                                src={`https://flagsapi.com/${params.code ? params.code?.toUpperCase() : params.category !== 'category' ? mainNews.country?.slice(-2).toUpperCase() : country.toUpperCase()}/flat/32.png`} 
+                                sx={{ width: '32px', height: '32px' }}
+                            >
+                                {mainNews.country || country}
+                            </Avatar>
+                        </Badge> 
+                        : 
+                        null
+                    }
                     <Button 
                         variant='contained' 
                         endIcon={<LanguageIcon />} 
@@ -73,9 +87,9 @@ export const Navigation: React.FC = () => {
                             key={region.code} 
                             onClick={() => {
                                 setAnchorEl(null);
+                                cacheNews(!mainNews.searchString);
                                 resetMainNews();
-                                setMainNewsPage(1);
-                                setCountryCode(region.code);
+                                navigate(`/country/${region.code}`)
                             }}
                             disableGutters={true}
                             sx={{pl: '10px'}}
@@ -89,36 +103,16 @@ export const Navigation: React.FC = () => {
                         </MenuItem>
                     )}
                 </Menu>
-                <Drawer 
-                    anchor='left'
-                    open={drawerIsOpen}
-                    onClose={() => setDrawerIsOpen(false)}
-                >
-                    <IconButton onClick={() => setDrawerIsOpen(false)}>
-                        <ChevronLeftIcon 
-                            color='primary' 
-                            fontSize='medium' 
-                        />
-                    </IconButton>
-                    <Divider />
-                    <List>
-                        <ListItem>
-                            <ListItemButton>
-                                Home
-                            </ListItemButton>
-                        </ListItem>
-                        <ListItem>
-                            <ListItemButton>
-                                News
-                            </ListItemButton>
-                        </ListItem>
-                        <ListItem>
-                            <ListItemButton>
-                                App
-                            </ListItemButton>
-                        </ListItem>
-                    </List>
-                </Drawer>
+                <SearchPanel
+                    mainNews={mainNews}
+                    countryCode={country}
+                    page={mainNews.page}
+                    resetMainNews={resetMainNews}
+                    cacheNews={cacheNews}
+                    getNewsByParams={getNewsByParams}
+                    sidePanelIsVisible={sidePanelIsVisible} 
+                    toggleSidePanelIsVisible={toggleSidePanelIsVisible}
+                />
             </Toolbar>
         </AppBar>
     )

@@ -8,23 +8,18 @@ import { generalActions } from './slice';
 import * as thunks from './thunks';
 
 // Types
-import { HeadlineType } from '../../init/types/defaultTypes';
-type useGeneralType = () => {
-    getUserCountryCode: () => void;
-    getTopHeadlinesByCountryCode: (countryCode: string | null, page: number) => void;
-    setHeadlines: (articles: HeadlineType[]) => void;
-    resetMainNews: () => void;
-    setCountryCode: (countryCode: string) => void;
-    setMainNewsPage: (page: number) => void;
-}
+import { HeadlineType, MainNewsType} from '../../init/types/defaultTypes';
 
-export const useGeneral: useGeneralType = () => {
+export const useGeneral = () => {
     const dispatch = useAppDispatch();
-    function getUserCountryCode() {
-        dispatch(thunks.getUserCountryCodeThunk())
+    function getUserCountryCode(func?: (country: string) => void) {
+        dispatch(thunks.getUserCountryCodeThunk({func}))
     }
-    function getTopHeadlinesByCountryCode(countryCode: null | string, page: number) {
+    function getTopHeadlinesByCountryCode(countryCode: string, page: number) {
         dispatch(thunks.getTopHeadlinesByCountryCodeThunk({countryCode, page}))
+    }
+    function getNewsByParams(searchString: string, searchCategory: string, countryCode: string, page: number) {
+        dispatch(thunks.getNewsByParamsThunk({searchString, searchCategory, countryCode, page}))
     }
     function setHeadlines(articles: HeadlineType[]) {
         dispatch(generalActions.setHeadlines(articles))
@@ -38,12 +33,21 @@ export const useGeneral: useGeneralType = () => {
     function setCountryCode(countryCode: string) {
         dispatch(generalActions.setCountryCode(countryCode))
     }
+    function cacheNews(byCode: boolean) {
+        dispatch(generalActions.cacheNews({byCode}))
+    }
+    function setCachedNews(news: MainNewsType | undefined) {
+        dispatch(generalActions.setCachedNews(news))
+    }
     return {
         getUserCountryCode,
         getTopHeadlinesByCountryCode,
+        getNewsByParams,
         setHeadlines,
         resetMainNews,
         setCountryCode,
-        setMainNewsPage
+        setMainNewsPage,
+        cacheNews,
+        setCachedNews
     }
 }

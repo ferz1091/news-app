@@ -22,6 +22,16 @@ const NewsAPI = {
         return (
             instance.get<TopHeadlinesByCountryCodeType>(`/top-headlines?apiKey=${API_KEY}&country=${countryCode}&pageSize=${pageSize}&page=${page}`)
         )
+    },
+    getTopHeadlinesByCategory(countryCode: string, page: number, searchCategory: string) {
+        return (
+            instance.get<TopHeadlinesByCountryCodeType>(`/top-headlines?apiKey=${API_KEY}&country=${countryCode}&category=${searchCategory}&pageSize=${pageSize}&page=${page}`)
+        )
+    },
+    getNewsByString(searchString: string, page: number) {
+        return (
+            instance.get<TopHeadlinesByCountryCodeType>(`/everything?apiKey=${API_KEY}&q=${searchString}&pageSize=${pageSize}&page=${page}`)
+        )
     }
 };
 

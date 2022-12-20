@@ -1,6 +1,6 @@
 export type CountryCodeData = {
         country_code: string;
-}
+};
 
 export type HeadlineType = {
     author: string;
@@ -17,10 +17,13 @@ export type TopHeadlinesByCountryCodeType = {
     articles: HeadlineType[],
     status: string,
     totalResults: number
-}
+};
 
-export type CachedNewsType = {
-    data: Array<HeadlineType>, 
-    country: string, 
-    page: number
+export type MainNewsType = {
+    data: Array<HeadlineType>,
+    page: number,
+    searchString: string,
+    searchCategory: string | null,
+    totalResults: number
+    country?: string
 }

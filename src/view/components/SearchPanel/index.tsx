@@ -1,5 +1,5 @@
 // Core
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Drawer, TextField, Autocomplete, Box, Typography, Button } from '@mui/material';
 
@@ -20,11 +20,39 @@ type SearchPanelProps = {
 }
 
 export const SearchPanel: React.FC<SearchPanelProps> = (props) => {
-    const {sidePanelIsVisible, toggleSidePanelIsVisible, cacheNews, resetMainNews, getNewsByParams, countryCode, page, mainNews} = props;
+    const {sidePanelIsVisible, toggleSidePanelIsVisible, cacheNews, resetMainNews, mainNews} = props;
     const [searchString, setSearchString] = useState<string>('');
     const [searchCategory, setSearchCategory] = useState<string>('');
     const [isSearchWasSubmitted, toggleIsSearchWasSubmitted] = useState<boolean>(false);
+    const [isEnterWasPressed, toggleIsEnterWasPressed] = useState<boolean>(false);
     const navigate = useNavigate();
+    const handleSearchSubmit = (searchString: string, searchCategory: string, mainNews: MainNewsType) => {
+        toggleIsSearchWasSubmitted(true);
+        if (searchString || searchCategory) {
+            cacheNews(!mainNews.searchString);
+            navigate(`/news/${searchCategory ? `${searchCategory}_${mainNews.country}` : 'category'}/${searchString ? searchString : 'query'}`)
+            resetMainNews();
+            setSearchString('')
+            setSearchCategory('');
+            toggleIsSearchWasSubmitted(false);
+            toggleSidePanelIsVisible(false);
+        }
+    }
+    const handleEnterDown = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') toggleIsEnterWasPressed(true);
+    } 
+    useEffect(() => {
+        document.addEventListener('keydown', handleEnterDown)
+        return function() {
+            document.removeEventListener('keydown', handleEnterDown)
+        }
+    }, [])
+    useEffect(() => {
+        if (sidePanelIsVisible) {
+            handleSearchSubmit(searchString, searchCategory, mainNews);
+        }
+        toggleIsEnterWasPressed(false);
+    }, [isEnterWasPressed])
     return (
         <Drawer 
             open={sidePanelIsVisible} 
@@ -65,18 +93,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = (props) => {
                     variant='contained'
                     color={isSearchWasSubmitted && !searchString && !searchCategory ? 'error' : 'primary'}
                     sx={{ width: '200px', m: '10px' }}
-                    onClick={() => {
-                        toggleIsSearchWasSubmitted(true);
-                        if (searchString || searchCategory) {
-                            cacheNews(!searchString);
-                            navigate(`/news/${searchCategory ? `${searchCategory}_${mainNews.country}` : 'category'}/${searchString ? searchString : 'query'}`)
-                            resetMainNews();
-                            setSearchString('')
-                            setSearchCategory('');
-                            toggleIsSearchWasSubmitted(false);
-                            toggleSidePanelIsVisible(false);
-                        }
-                    }}
+                    onClick={() => handleSearchSubmit(searchString, searchCategory, mainNews)}
                 >
                     Search
                 </Button>

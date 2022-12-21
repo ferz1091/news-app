@@ -21,7 +21,7 @@ import { useAppSelector } from '../../../tools';
 
 export const NewsByParamsPage: React.FC = () => {
     const {mainNews, cachedNews, country, isFetching} = useAppSelector(state => state.general);
-    const {setHeadlines, setMainNewsPage, setCachedNews, getNewsByParams, getUserCountryCode} = useGeneral();
+    const {setHeadlines, setMainNewsPage, setCachedNews, getNewsByParams, getUserCountryCode, cacheNews, resetMainNews} = useGeneral();
     const [isLocalFetching, setLocalFetching] = useState<boolean>(false);
     const params = useParams<{category?: string, query?: string}>();
     const navigate = useNavigate();
@@ -62,7 +62,31 @@ export const NewsByParamsPage: React.FC = () => {
     useEffect(() => {
         if (!mainNews.data.length) {
             if (params.category && params.category !== 'category') {
-                if (cachedNews.some(news => news.searchCategory === params.category?.slice(0, -3))) {
+                if (cachedNews.some(news => news.searchCategory === params.category?.slice(0, -3) && news.country === params.category.slice(-2))) {
+                    setCachedNews(cachedNews.find(news => news.searchCategory === params.category?.slice(0, -3) && news.country === params.category?.slice(-2)))
+                } else {
+                    if (regions.some(region => region.code === params.category?.slice(-2))) {
+                        getNewsByParams('', params.category.slice(0, -3), params.category?.slice(-2), mainNews.page)
+                    } else {
+                        if (!country) {
+                            getUserCountryCode((country: string) => navigate(`/country/${country}`));
+                        } else {
+                            navigate(`/country/${country}`)
+                        }
+                    }
+                }
+            } else if (params.query && params.query !== 'query') {
+                if (cachedNews.some(news => news.searchString === params.query)) {
+                    setCachedNews(cachedNews.find(news => news.searchString === params.query))
+                } else {
+                    getNewsByParams(params.query, '', '', mainNews.page);
+                }
+            }
+        } else {
+            cacheNews(!mainNews.searchString);
+            resetMainNews();
+            if (params.category && params.category !== 'category') {
+                if (cachedNews.some(news => news.searchCategory === params.category?.slice(0, -3) && news.country === params.category.slice(-2))) {
                     setCachedNews(cachedNews.find(news => news.searchCategory === params.category?.slice(0, -3) && news.country === params.category?.slice(-2)))
                 } else {
                     if (regions.some(region => region.code === params.category?.slice(-2))) {

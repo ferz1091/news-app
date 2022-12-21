@@ -21,7 +21,7 @@ import { useAppSelector } from '../../../tools';
 
 export const NewsByCountryPage: React.FC = () => {
     const {country, mainNews, isFetching, cachedNews} = useAppSelector(state => state.general);
-    const { getTopHeadlinesByCountryCode, setHeadlines, setMainNewsPage, getUserCountryCode, setCachedNews} = useGeneral();
+    const {getTopHeadlinesByCountryCode, setHeadlines, setMainNewsPage, getUserCountryCode, setCachedNews, cacheNews, resetMainNews} = useGeneral();
     const [isLocalFetching, setLocalFetching] = useState<boolean>(false);
     const params = useParams<{code?: string}>();
     const navigate = useNavigate();
@@ -53,24 +53,30 @@ export const NewsByCountryPage: React.FC = () => {
     useEffect(() => {
         if (!regions.some(region => region.code === params.code)) {
             if (!country) {
-                console.log(1);
                 getUserCountryCode((country: string) => navigate(`/country/${country}`));
             } else {
                 navigate(`/country/${country}`)
             }
         } else {
             if (!country) {
-                console.log(2);
                 getUserCountryCode()
             }
         }
     }, [])
     useEffect(() => {
         if (!mainNews.data.length) {
+            if (cachedNews.some(news => news.country === params.code && !news.searchCategory)) {
+                setCachedNews(cachedNews.find(news => news.country === params.code && !news.searchCategory))
+            } else {
+                getTopHeadlinesByCountryCode(params.code? params.code : 'us', mainNews.page);
+            }
+        } else {
+            cacheNews(true);
+            resetMainNews();
             if (cachedNews.some(news => news.country === params.code)) {
                 setCachedNews(cachedNews.find(news => news.country === params.code))
             } else {
-                getTopHeadlinesByCountryCode(params.code? params.code : 'us', mainNews.page);
+                getTopHeadlinesByCountryCode(params.code ? params.code : 'us', mainNews.page);
             }
         }
     }, [params.code])

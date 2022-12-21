@@ -1,7 +1,8 @@
 // Types
 type region = {label: string, code: string};
 
-export const API_KEY = 'f57d22253e934477b22a07d7cfed887d';
+// export const API_KEY = 'f57d22253e934477b22a07d7cfed887d';
+export const API_KEY = '80ab428a8e3e431d9db82f7876969017';
 export const pageSize = 20;
 export const regions: region[] = [
     {label: 'Argentina', code: 'ar'},

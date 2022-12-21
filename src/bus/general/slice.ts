@@ -52,21 +52,16 @@ const generalSlice = createSlice({
             if (action.payload.byCode) {
                 if (state.mainNews.searchCategory) {
                     state.cachedNews = [
-                        ...state.cachedNews.filter(news => {
-                            if (news.searchCategory !== state.mainNews.searchCategory) {
-                                return true;
-                            } else if (news.country !== state.mainNews.country) {
-                                return true;
-                            }
-                            return false;
-                        }), state.mainNews
+                        ...state.cachedNews.filter(news => !(news.searchCategory === state.mainNews.searchCategory && news.country === state.mainNews.country)),
+                        state.mainNews
                     ]
                 } else {
                     state.cachedNews = [
-                        ...state.cachedNews.filter(news => news.country !== state.mainNews.country), state.mainNews
+                        ...state.cachedNews.filter(news => !(news.country === state.mainNews.country && !news.searchCategory)), state.mainNews
                     ]
                 }
             } else {
+                console.log(1);
                 state.cachedNews = [
                     ...state.cachedNews.filter(news => news.searchString !== state.mainNews.searchString), state.mainNews
                 ]

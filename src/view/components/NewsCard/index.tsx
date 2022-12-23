@@ -12,7 +12,7 @@ import { HeadlineType } from '../../../init/types/defaultTypes';
 import ReplyIcon from '@mui/icons-material/Reply';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
-export const NewsCard: React.FC<HeadlineType> = (cardData) => {
+export const NewsCard: React.FC<{cardData: HeadlineType, index: number}> = ({cardData, index}) => {
     const [shareModalIsOpen, toggleShareModalIsOpen] = useState<boolean>(false);
     return (
         <Paper 
@@ -27,6 +27,7 @@ export const NewsCard: React.FC<HeadlineType> = (cardData) => {
                     sm: '90%'
                 }
             }}
+            id={index === 0 ? 'cardAnchor' : undefined}
         >
             <Card>
                 <CardMedia
@@ -35,10 +36,27 @@ export const NewsCard: React.FC<HeadlineType> = (cardData) => {
                     image={cardData.urlToImage}
                     alt={cardData.title}
                 />
-                <CardContent >
+                <CardContent>
                     <Box>
-                        {cardData.source.name ? <Chip label={cardData.source.name} color='primary' variant='outlined' sx={{ mr: '10px' }} /> : null}
-                        {cardData.author && !cardData.author.includes('https://') ? <Chip label={cardData.author} color='primary' sx={{m: '5px 0'}} /> : null}
+                        {cardData.source.name ? 
+                            <Chip 
+                                label={cardData.source.name} 
+                                color='primary' 
+                                variant='outlined' 
+                                sx={{ mr: '10px' }} 
+                            /> 
+                            : 
+                            null
+                        }
+                        {cardData.author && !cardData.author.includes('https://') ? 
+                            <Chip 
+                                label={cardData.author} 
+                                color='primary' 
+                                sx={{m: '5px 0'}}
+                            /> 
+                            : 
+                            null
+                        }
                     </Box>
                     {cardData.title ?
                         <Typography variant='h6' sx={{pt: '10px'}}>
@@ -48,21 +66,30 @@ export const NewsCard: React.FC<HeadlineType> = (cardData) => {
                         null
                     }
                     {cardData.description ?
-                        <Typography variant='caption' sx={{ display: 'block', pt: '10px' }}>
+                        <Typography 
+                            variant='caption' 
+                            sx={{ display: 'block', pt: '10px' }}
+                        >
                             {cardData.description}
                         </Typography>
                         :
                         null    
                     }
-                    <Box sx={{pt: '10px', position: 'relative', right: '8px', "a:link, a:visited": {textDecoration: 'none'}}}>
+                    <Box sx={{
+                        pt: '10px', 
+                        position: 'relative', 
+                        right: '8px', 
+                        "a:link, a:visited": {textDecoration: 'none'}}}
+                    >
                         <a 
                             href={cardData.url ? cardData.url : '#'} 
-                            target='_blank' rel="noreferrer"
+                            target='_blank' 
+                            rel="noreferrer"
                         >
                             <Button 
                                 startIcon={<OpenInNewIcon />} 
                                 variant='outlined'
-                                sx={{m: '0 5px'}}
+                                sx={{m: '5px 5px 0 5px'}}
                             >
                                 Learn more
                             </Button>
@@ -72,14 +99,27 @@ export const NewsCard: React.FC<HeadlineType> = (cardData) => {
                             onClick={() => toggleShareModalIsOpen(true)}
                             startIcon={<ReplyIcon />}
                             variant='outlined'
+                            sx={{m: '5px 5px 0 5px'}}
                         >
                             Share
                         </Button>
                         {cardData.publishedAt ? 
-                            <Box sx={{position: {xs: 'static', sm: 'absolute'}, top: '12px', right: '5px', pl: '6px', mt: {xs: '5px', sm: '0'}}}>
-                                <Chip variant='outlined' color='primary' label={<Typography variant='caption'>
-                                    {new Date(cardData.publishedAt).toLocaleString()}
-                                </Typography>}/>
+                            <Box sx={{
+                                position: {xs: 'static', bsm: 'absolute'}, 
+                                top: '18px', 
+                                right: '5px', 
+                                pl: '6px', 
+                                mt: {xs: '5px', sm: '5px', bsm: '0'}}}
+                            >
+                                <Chip 
+                                    variant='outlined' 
+                                    color='primary' 
+                                    label={
+                                        <Typography variant='caption'>
+                                            {new Date(cardData.publishedAt).toLocaleString()}
+                                        </Typography>
+                                    }
+                                />
                             </Box> 
                             :
                             null

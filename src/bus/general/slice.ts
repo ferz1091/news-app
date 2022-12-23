@@ -61,7 +61,6 @@ const generalSlice = createSlice({
                     ]
                 }
             } else {
-                console.log(1);
                 state.cachedNews = [
                     ...state.cachedNews.filter(news => news.searchString !== state.mainNews.searchString), state.mainNews
                 ]

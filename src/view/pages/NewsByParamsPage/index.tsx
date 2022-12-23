@@ -1,11 +1,8 @@
 // Core
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container } from '@mui/system';
 import { LinearProgress } from '@mui/material';
-
-// Api
-import NewsAPI from '../../../api';
 
 // Bus
 import { useGeneral } from '../../../bus/general';
@@ -17,48 +14,13 @@ import { NewsCard } from '../../components';
 import { regions } from '../../../init/constants';
 
 // Tools
-import { useAppSelector } from '../../../tools';
+import { useAppSelector, useParamsPageScrollPagination } from '../../../tools';
 
 export const NewsByParamsPage: React.FC = () => {
     const {mainNews, cachedNews, country, isFetching} = useAppSelector(state => state.general);
-    const {setHeadlines, setMainNewsPage, setCachedNews, getNewsByParams, getUserCountryCode, cacheNews, resetMainNews} = useGeneral();
-    const [isLocalFetching, setLocalFetching] = useState<boolean>(false);
-    const params = useParams<{category?: string, query?: string}>();
+    const {setCachedNews, getNewsByParams, getUserCountryCode, cacheNews, resetMainNews} = useGeneral();
+    const {isLocalFetching, params} = useParamsPageScrollPagination();
     const navigate = useNavigate();
-    const scrollHandler = (e: any): void => {
-        if (e.target.scrollHeight - e.target.scrollTop - window.innerHeight < 100) {
-            setLocalFetching(true);
-        }
-    }
-    useEffect(() => {
-        document.getElementById('app')?.addEventListener('scroll', scrollHandler)
-        return function () {
-            document.getElementById('app')?.removeEventListener('scroll', scrollHandler)
-        }
-    }, [])
-    useEffect(() => {
-        if (isLocalFetching) {
-            if (mainNews.data.length && mainNews.data.length < mainNews.totalResults) {
-                if (params.category && params.category !== 'category') {
-                    NewsAPI.getTopHeadlinesByCategory(params.category.slice(-2), mainNews.page + 1, params.category.slice(0, -3))
-                        .then(response => {
-                            setHeadlines(response.data.articles);
-                            setMainNewsPage(mainNews.page + 1);
-                        })
-                        .finally(() => setLocalFetching(false))
-                } else if (params.query && params.query !== 'query') {
-                    NewsAPI.getNewsByString(params.query, mainNews.page + 1)
-                        .then(response => {
-                            setHeadlines(response.data.articles);
-                            setMainNewsPage(mainNews.page + 1);
-                        })
-                        .finally(() => setLocalFetching(false))
-                }
-            } else {
-                setLocalFetching(false);
-            }
-        }
-    }, [isLocalFetching])
     useEffect(() => {
         if (!mainNews.data.length) {
             if (params.category && params.category !== 'category') {
@@ -143,7 +105,7 @@ export const NewsByParamsPage: React.FC = () => {
                 null
             }
             {mainNews.data.length ?
-                mainNews.data.map(card => <NewsCard key={card.title} {...card} />)
+                mainNews.data.map((card, index) => <NewsCard key={card.title} cardData={card} index={index} />)
                 :
                 null
             }

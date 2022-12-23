@@ -1,5 +1,5 @@
 // Core
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Modal, Box, TextField, Button, InputAdornment } from '@mui/material'
 import {
     TwitterIcon,
@@ -42,6 +42,11 @@ type IconType = React.FC<Omit<React.SVGProps<SVGSVGElement>, "width" | "height">
     round?: boolean | undefined;
     size?: string | number | undefined;
 }>;
+type ShareModalPropsType = { 
+    shareModalIsOpen: boolean, 
+    toggleShareModalIsOpen: React.Dispatch<React.SetStateAction<boolean>>, 
+    url: string
+}
 
 const ShareButton: React.FC<{ Component: ComponentType, Icon: IconType, url: string}> = ({Component, Icon, url}) => {
     return (
@@ -51,8 +56,8 @@ const ShareButton: React.FC<{ Component: ComponentType, Icon: IconType, url: str
     )
 }
 
-export const ShareModal: React.FC<{ shareModalIsOpen: boolean, toggleShareModalIsOpen: React.Dispatch<React.SetStateAction<boolean>>, url: string }> = ({ shareModalIsOpen, toggleShareModalIsOpen, url }) => {
-    const [isWasCopied, toggleisWasCopied] = useState<boolean>(false);
+export const ShareModal: React.FC<ShareModalPropsType> = ({shareModalIsOpen, toggleShareModalIsOpen, url}) => {
+    const [isWasCopied, toggleIsWasCopied] = useState<boolean>(false);
     return (
         <Modal open={shareModalIsOpen} onClose={() => toggleShareModalIsOpen(false)}>
             <Box sx={{
@@ -64,7 +69,8 @@ export const ShareModal: React.FC<{ shareModalIsOpen: boolean, toggleShareModalI
                 transform: 'translate(-50%, -50%)',
                 width: '80vw',
                 bgcolor: 'white',
-                border: '1px solid #1976d2',
+                border: '1px solid',
+                borderColor: 'primary.main',
                 borderRadius: '10px',
                 boxShadow: 24,
                 p: 2,
@@ -74,7 +80,8 @@ export const ShareModal: React.FC<{ shareModalIsOpen: boolean, toggleShareModalI
                     display: 'flex',
                     justifyContent: 'space-around',
                     "svg": {xs: {width: '25px', height: '25px'}, sm: {width: '50px', height: '50px'}}
-                }}>
+                    }}
+                >
                     <ShareButton Component={TwitterShareButton} Icon={TwitterIcon} url={url}/>
                     <ShareButton Component={FacebookShareButton} Icon={FacebookIcon} url={url}/>
                     <ShareButton Component={TelegramShareButton} Icon={TelegramIcon} url={url}/>
@@ -97,9 +104,9 @@ export const ShareModal: React.FC<{ shareModalIsOpen: boolean, toggleShareModalI
                             <Button 
                                 onClick={() => {
                                     navigator.clipboard.writeText(url).then(() => {
-                                        toggleisWasCopied(true);
+                                        toggleIsWasCopied(true);
                                         setTimeout(() => {
-                                            toggleisWasCopied(false);
+                                            toggleIsWasCopied(false);
                                         }, 1000)
                                     })
                                 }} 
@@ -116,7 +123,7 @@ export const ShareModal: React.FC<{ shareModalIsOpen: boolean, toggleShareModalI
                             p: '3px', 
                             ":hover": { 
                                 "fieldset": { 
-                                    borderColor: isWasCopied ? '#2e7d32' :'#1976d2', 
+                                    borderColor: isWasCopied ? 'success.main' :'primary.main', 
                                     borderWidth: '2px'
                                 }
                             }
@@ -125,7 +132,7 @@ export const ShareModal: React.FC<{ shareModalIsOpen: boolean, toggleShareModalI
                         mt: '10px', 
                         alignSelf: 'center', 
                         "fieldset": { 
-                            borderColor: isWasCopied ? '#2e7d32' : '#1976d2', 
+                            borderColor: isWasCopied ? 'success.main' : 'primary.main', 
                             borderWidth: '2px' 
                         },
                         "fieldset:hover": {borderColor: 'white'}

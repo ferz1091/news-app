@@ -11,7 +11,7 @@ import {
     MenuItem, 
     Avatar, 
     Typography, 
-    Badge} from '@mui/material';
+    Badge } from '@mui/material';
 
 // Bus
 import { useGeneral } from '../../../bus/general';
@@ -39,7 +39,10 @@ export const Navigation: React.FC = () => {
     return (
         <AppBar sx={{minHeight: '64px'}}>
             <Toolbar>
-                <IconButton onClick={() => toggleSidePanelIsVisible(true)} sx={{color:'white'}}>
+                <IconButton 
+                    onClick={() => toggleSidePanelIsVisible(true)} 
+                    sx={{color:'white'}}
+                >
                     <SearchIcon sx={{position: 'relative', top: {sm: '0px', xs: '5px'}}}/>
                 </IconButton>
                 <Box sx={{
@@ -68,9 +71,9 @@ export const Navigation: React.FC = () => {
                         endIcon={<LanguageIcon />} 
                         sx={{
                             ml: '15px',
-                            backgroundColor: 'white',
-                            color: '#1976d2',
-                            ":hover": {color: 'white'}
+                            backgroundColor: 'secondary.main',
+                            color: 'primary.main',
+                            ":hover": { color: 'secondary.main'}
                         }}
                         onClick={(e: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(e.currentTarget)}
                         children='Region'
@@ -80,7 +83,15 @@ export const Navigation: React.FC = () => {
                     open={Boolean(anchorEl)} 
                     anchorEl={anchorEl} 
                     onClose={() => setAnchorEl(null)}
-                    sx={{ ".MuiMenu-paper": { height: '150px', width: '113.5px', "::-webkit-scrollbar": { width: '5px' }, "::-webkit-scrollbar-thumb": { backgroundColor: '#1976d2', borderRadius: '5px'}}}}
+                    sx={{
+                        ".MuiMenu-paper": {
+                            pl: '5px', 
+                            height: '150px', 
+                            width: '108.5px', 
+                            "::-webkit-scrollbar": { width: '5px' }, 
+                            "::-webkit-scrollbar-thumb": { backgroundColor: 'primary.main', borderRadius: '5px'}
+                        }
+                    }}
                 >
                     {regions.map(region => 
                         <MenuItem 
@@ -92,14 +103,26 @@ export const Navigation: React.FC = () => {
                                 navigate(`/country/${region.code}`)
                             }}
                             disableGutters={true}
-                            sx={{pl: '10px'}}
+                            sx={{
+                                pl: '10px', 
+                                ":active": {
+                                    bgcolor: 'primary.main', 
+                                    transition: 'all 0.5s linear', 
+                                    color: 'secondary.main'
+                                }
+                            }}
+                            divider
                         >
                             <Avatar 
                                 alt={region.code} 
                                 src={`https://flagsapi.com/${region.code.toUpperCase()}/flat/16.png`}
                                 sx={{height: '16px', width: '16px'}}
                             />
-                            <Typography children={region.label} variant='caption' pl='5px' />
+                            <Typography 
+                                children={region.label} 
+                                variant='caption' 
+                                pl='5px'
+                            />
                         </MenuItem>
                     )}
                 </Menu>

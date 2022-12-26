@@ -7,7 +7,7 @@ import { useAppSelector } from '../../tools';
 import { NewsByCountryPage, NewsByParamsPage } from '../pages';
 
 // Components
-import { LinearProgressSpinner, Navigation } from '../components';
+import { LinearProgressSpinner, Navigation, HandleErrors } from '../components';
 
 const PageLayout: React.FC = () => {
     const navigate = useNavigate();
@@ -20,6 +20,7 @@ const PageLayout: React.FC = () => {
     return (
         <>
             <Navigation />
+            <HandleErrors />
             <Outlet />
         </>
     )

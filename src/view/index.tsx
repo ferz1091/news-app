@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux'
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@mui/system';
-import { teal } from '@mui/material/colors';
+import { teal, red } from '@mui/material/colors';
 
 // Bus
 import { store } from '../init/redux';
@@ -34,7 +34,8 @@ const theme = createTheme({
         primary: teal,
         secondary: {
             main: '#fff'
-        }
+        },
+        error: red
     },
     breakpoints: {
         values: {

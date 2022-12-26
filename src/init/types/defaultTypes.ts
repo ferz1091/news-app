@@ -27,3 +27,9 @@ export type MainNewsType = {
     totalResults: number
     country?: string
 }
+
+export type ErrorType = {
+    id: string,
+    status: boolean,
+    message: string
+}

@@ -23,7 +23,7 @@ export const useCountryPageScrollPagination = () => {
     }
     useEffect(() => {
         if (isLocalFetching) {
-            if (mainNews.data.length && mainNews.data.length < mainNews.totalResults) {
+            if (mainNews.data.length && mainNews.data.length < mainNews.totalResults && mainNews.data.length <= 99) {
                 NewsAPI.getTopHeadlinesByCountryCode(params.code ? params.code : 'us', mainNews.page + 1)
                     .then(response => {
                         setHeadlines(response.data.articles);

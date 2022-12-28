@@ -29,7 +29,7 @@ export const useParamsPageScrollPagination = () => {
     }, [])
     useEffect(() => {
         if (isLocalFetching) {
-            if (mainNews.data.length && mainNews.data.length < mainNews.totalResults) {
+            if (mainNews.data.length && mainNews.data.length < mainNews.totalResults && mainNews.data.length <= 99) {
                 if (params.category && params.category !== 'category') {
                     NewsAPI.getTopHeadlinesByCategory(params.category.slice(-2), mainNews.page + 1, params.category.slice(0, -3))
                         .then(response => {
